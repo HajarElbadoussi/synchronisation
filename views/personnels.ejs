@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    
+    <center><h1>You have <span style="background-color:#CCCCCC" data-bind="text: count"></span> record(s) in the database</h1></center>
+    
+     <table border=1 data-bind="foreach: personnels">
+           <tr><td style="background-color:#CECECE" data-bind="text: $data.firstname"></td>
+           <td style="background-color:#CECECE" data-bind="text: $data.lastname"></td></tr>
+     </table>     
+         
+     <script src="/javascripts/knockout-3.4.1.js"></script>
+     <script src="/socket.io/socket.io.js"></script>
+     <script src="/javascripts/jquery-2.1.1.js"></script>
+     <script>
+        
+         // -------------------------my ViewModel-------------------
+          function ViewModel() {
+             var self = this;
+             self.count = ko.observable(0);
+             self.personnels = ko.observableArray();
+           
+             $.getJSON("http://localhost:3000/Personnels/GetDataJson", function(data) {
+                self.personnels(data);
+                self.count(data.length);
+                      })
+                };
+
+           var viewModel = new ViewModel();
+           ko.applyBindings(viewModel);
+ 
+         //-------------------------- listening the change in DB----------------------
+            var socket = io.connect('http://localhost:3000');
+            socket.on('Change', function(message) {
+
+          // insert the new receive record via socket in 'personnels' collection
+          // viewModel.personnels.push(message);
+                 //OR
+          // Load all the records after each insert operation in DB
+                $.getJSON("http://localhost:3000/Personnels/GetDataJson", function(data) {
+                    viewModel.personnels(data);
+                    viewModel.count(data.length);
+                })
+                 
+                      });
+     </script>
+   </body>
+</html>
