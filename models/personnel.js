@@ -4,5 +4,5 @@ var PersonnelSchema = new mongoose.Schema({
   lastname: String
   });
 // comme
-//qsjhdkjzhdjh
+
 module.exports = mongoose.model('Personnel', PersonnelSchema);
